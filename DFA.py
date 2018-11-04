@@ -136,9 +136,9 @@ class DFA():
 # print(m2.formatted_string())
 # print(m2)
 
-# m3 = DFA.random(4)
-# print(m3.formatted_string())
-# print(m3)
+m3 = DFA.random(4)
+print(m3.formatted_string())
+print(m3)
 
 # m4 = DFA(4)
 # m4.change(accepting=0)
