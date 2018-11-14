@@ -5,7 +5,7 @@ class DFAError(Exception):
 
 class DFA():
     def __init__(self, data=None):
-        self.transitions = {}
+        self.transitions = []
         self.accepting = []
         self.starting = 0
         self.as_str = ""
@@ -16,7 +16,7 @@ class DFA():
         if type(data) is str:
             self.set_state(data)
         elif type(data) is int:
-            self.transitions = {i: {0: i, 1: i} for i in range(data)}
+            self.transitions = [[i, i] for i in range(data)]
             self.accepting = [False for i in range(data)]
         else:
             raise DFAError(f"Bad value given in initalization: Expected type str or int, got {type(data)} instead")
@@ -51,13 +51,7 @@ class DFA():
 
         if accepting != None:
             if type(accepting) is list:
-                if len(accepting) == 0:
-                    self.accepting = [False for i in range(len(self))]
-                if len(accepting) == len(self):
-                    if type(accepting[0]) is bool:
-                        self.accepting = accepting
-                else:
-                    self.accepting = [True if i in accepting else False for i in range(len(self))]
+                self.accepting = [True if i in accepting else False for i in range(len(self))]
             elif type(accepting) is int:
                 self.accepting[accepting] = not self.accepting[accepting]
             else:
@@ -86,8 +80,7 @@ class DFA():
         str_val = str_val.split(";")
         self.accepting = [True if i[0] == "*" else False for i in str_val]
         self.starting = [i for i, j in enumerate(str_val) if j[-1] == "-"][0]
-        self.transitions = {i: {j: int(value.strip("*-")) for j, value in enumerate(states.split(","))} \
-        for i, states in enumerate(str_val)}
+        self.transitions = [[int(value.strip("*-")) for value in states.split(",")] for states in str_val]
         self.pending_update = False
 
     def error_check(self, s):
@@ -106,13 +99,13 @@ class DFA():
         if not self.pending_update:
             return
         self.as_str = ";".join(["{}{},{}{}" \
-        .format('*' if self.accepting[i] else '', j[0], j[1], '-' if self.starting == i else '')\
-        for i, j in self.transitions.items()])
+        .format('*' if self.accepting[s] else '', i[0], i[1], '-' if self.starting == s else '') \
+        for s, i in enumerate(self.transitions)])
 
     def formatted_string(self):
         return f"Starting state: {self.starting}\n" \
         f"Accepting states: {[i for i, j in enumerate(self.accepting) if j]}\n" \
-        f"Transition table:\n{chr(10).join([f'{i}: {j}' for i, j in self.transitions.items()])}"
+        f"Transition table:\n{chr(10).join([f'{s}: {i}' for s, i in enumerate(self.transitions)])}"
 
     @staticmethod
     def random(n):
@@ -123,13 +116,13 @@ class DFA():
         m = DFA(n)
         m.starting = rand_state()
         m.accepting = [True if r.randint(0, 1) else False for i in range(n)]
-        m.transitions = {i: {0: rand_state(), 1: rand_state()} for i in range(n)}
+        m.transitions = [[rand_state(), rand_state()] for i in range(n)]
         return m
 
 
-# m1 = DFA("*1,2;3,0;4,1-;0,0")
+# m1 = DFA("*1,2;3,0;3,1-;0,0")
 # print(m1)
-# m1.change(transition=(0, 0, 0), accepting=[0, 0, 0, 1], starting=1)
+# m1.change(transition=(0, 0, 0), accepting=[0, 1], starting=1)
 # print(m1)
 
 # m2 = DFA(4)
