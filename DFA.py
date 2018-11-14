@@ -1,4 +1,5 @@
 import random as r
+from itertools import product
 
 class DFAError(Exception):
         pass
@@ -108,6 +109,12 @@ class DFA():
         f"Transition table:\n{chr(10).join([f'{s}: {i}' for s, i in enumerate(self.transitions)])}"
 
     @staticmethod
+    def all_strings(sigma, w):
+        iterator = product(sigma, repeat=w)
+        for item in iterator:
+            yield "".join(item)
+
+    @staticmethod
     def random(n):
         if type(n) is not int:
             raise DFAError(f"Expected int as parameter for random(), not {n}")
@@ -144,3 +151,5 @@ class DFA():
 # print(m5)
 # m5.change(accepting=[])
 # print(m5)
+
+# print(list(DFA.all_strings(["0", "1"], 5)))
