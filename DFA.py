@@ -11,7 +11,7 @@ class DFA():
         self.starting = 0
         self.as_str = ""
         self.pending_update = True
-        
+
         if data == None:
             return
         if type(data) is str:
@@ -21,7 +21,7 @@ class DFA():
             self.accepting = [False for i in range(data)]
         else:
             raise DFAError(f"Bad value given in initalization: Expected type str or int, got {type(data)} instead")
-        
+
     def __repr__(self):
         self.update_as_str()
         return self.as_str
@@ -125,6 +125,33 @@ class DFA():
         m.accepting = [True if r.randint(0, 1) else False for i in range(n)]
         m.transitions = [[rand_state(), rand_state()] for i in range(n)]
         return m
+
+#language used:
+    # L = { w | w is binary string, w has more 1's than 0's OR w has equal
+    # number of 1's and 0's and begins with 1}
+        #side note if the string begins with 1 and string size is 1,
+        #that can be related to the guarentee of 50% correctness
+
+
+
+
+
+#Correctness function:
+    #DFA: M, input length: k
+    #objective: We want to measure the correctness of DFA M for strings length k
+    #  -> by generating table T for
+def Correctness(M, k):
+    # we need to first build the table T
+    # T is defined as a function which returns
+    # T[p,q,l,k]
+    # p & q can have values from is the number of states in DFA M.
+    # l is the number of input symbols left
+    # k currently in the input when
+
+
+    #Game plan: start from accepting states in DFA M
+
+
 
 
 # m1 = DFA("*1,2;3,0;3,1-;0,0")
