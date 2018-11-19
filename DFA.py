@@ -1,6 +1,9 @@
 import random as r
 from itertools import product
 
+FILENO = 0
+SFILENO = 0
+
 class DFAError(Exception):
         pass
 
@@ -21,7 +24,7 @@ class DFA():
             self.accepting = [False for i in range(data)]
         else:
             raise DFAError(f"Bad value given in initalization: Expected type str or int, got {type(data)} instead")
-        
+    
     def __repr__(self):
         self.update_as_str()
         return self.as_str
@@ -73,6 +76,12 @@ class DFA():
         for c in s:
             cur_state = self.transitions[cur_state][int(c)]
         return self.accepting[cur_state]
+        
+    # Correct Function
+    # DFA M with input length k
+    # Description: Measure correctness of DFA M with length k
+    def Correct(self, s):
+        #
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -127,24 +136,48 @@ class DFA():
         return m
 
 
+# Get the two DFAs with format (original DFA M and locally changed DFA N) & compare them
+#def Compare(M, M's k, L, L's K):
+#   Get the scores of the two DFAs, M & L, via Correct(DFA, # number of states)
+#   With M being the original DFA and L being the DFA with local change
+#   if ( |(Correct(M, k)| / 2^k ) <= (|Correct(L, k)| / 2^k)) copy over L into M
+#   else return
+#   OR
+#   if (file with DFA M score <= file with DFA L score) copy L into M
+#   else return
+
+
+
+# Reading in input from STDIN piped until /n
+# for lines in sys.stdin
+#     stripped = lines.strip()
+#     if not stripped: break
+#     result.append(stripped)
+# m1 = DFA(result)
+
 # m1 = DFA("*1,2;3,0;3,1-;0,0")
 # print(m1)
 # m1.change(transition=(0, 0, 0), accepting=[0, 1], starting=1)
 # print(m1)
 
+#-- Creates a DFA with 4 states that loop on each other
+#   has 0 as the start state, but has no accepting state
 # m2 = DFA(4)
 # print(m2.formatted_string())
 # print(m2)
 
-# m3 = DFA.random(4)
-# print(m3.formatted_string())
-# print(m3)
+#-- Randomly generate DFA with 4 states do 7
+#m3 = DFA.random(4)
+#print(m3.formatted_string())
+#print(m3)
 
+#-- Check if a given string is valid in the DFA
 # m4 = DFA(4)
 # m4.change(accepting=0)
 # s = "0101010101100101100"
 # print(m4.test_str(s))
 
+#-- Randomly generate a DFA with 4 states and change the accepting state
 # m5 = DFA.random(4)
 # print(m5)
 # m5.change(accepting=[2, 3])
