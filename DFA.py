@@ -8,9 +8,11 @@ class DFA():
     def __init__(self, data=None):
         self.transitions = []
         self.accepting = []
+        self.alt = [] #this will use our alternative format of transitions
         self.starting = 0
         self.as_str = ""
         self.pending_update = True
+
 
         if data == None:
             return
@@ -19,6 +21,7 @@ class DFA():
         elif type(data) is int:
             self.transitions = [[i, i] for i in range(data)]
             self.accepting = [False for i in range(data)]
+            self.alt = [None for i in range(data)]
         else:
             raise DFAError(f"Bad value given in initalization: Expected type str or int, got {type(data)} instead")
 
@@ -44,9 +47,11 @@ class DFA():
         return hash(self.as_str)
 
     def change(self, transition=None, accepting=None, starting=None):
+        #we need to have some way shape or form of adjusting our alternative transition table
         if transition != None:
             if type(transition) is tuple and len(transition) == 3:
                 self.transitions[transition[0]][transition[1]] = transition[2]
+                self.alternativeRep()
             else:
                 raise DFAError(f"Bad value in change(): transition should be a len 3 tuple, not {transition}")
 
@@ -68,6 +73,11 @@ class DFA():
             return
         self.pending_update = True
 
+    def alternativeRep(self): #we need this to get called everytime the "transitions" has been created or updated.
+        for q in transitions:
+            for a in trasitions[q]:
+                self.alt[trasitions[q][a]][a] += a
+
     def test_str(self, s):
         cur_state = self.starting
         for c in s:
@@ -82,6 +92,7 @@ class DFA():
         self.accepting = [True if i[0] == "*" else False for i in str_val]
         self.starting = [i for i, j in enumerate(str_val) if j[-1] == "-"][0]
         self.transitions = [[int(value.strip("*-")) for value in states.split(",")] for states in str_val]
+        self.alternativeRep() #should update our
         self.pending_update = False
 
     def error_check(self, s):
@@ -124,6 +135,7 @@ class DFA():
         m.starting = rand_state()
         m.accepting = [True if r.randint(0, 1) else False for i in range(n)]
         m.transitions = [[rand_state(), rand_state()] for i in range(n)]
+        m.alternativeRep()
         return m
 
 #language used:
