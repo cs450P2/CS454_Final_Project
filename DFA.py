@@ -77,11 +77,61 @@ class DFA():
             cur_state = self.transitions[cur_state][int(c)]
         return self.accepting[cur_state]
         
+    # Copy for DFA self to get DFA N
+    def CopyDFA(self, N)
+        self.transitions = N.transitions.copy()
+        self.accepting = N.accepting.copy()
+        self.starting = N.starting
+        self.as_str = N.as_str
+        self.pending_update = N.pending_update
+
+    # Checks two DFAs self vs L and see if they are the same return bool
+    def DfaChecker(L)
+        # Checking Transitions
+        for x in self.transitions:
+            for y in L.transitions:
+                if x != y:
+                    return False
+        # Checking accepting states
+        for x in self.accepting:
+            for y in L.accepting:
+                if x != y:
+                    return False
+        # checking starting states
+        if self.starting != L.starting:
+            return False
+        # Checking str
+        if self.as_str != L.as_str:
+            return False
+        # Checking pending
+        if self.pending_update != L.pending_update:
+            return False
+    
     # Correct Function
     # DFA M with input length k
     # Description: Measure correctness of DFA M with length k
-    def Correct(self, s):
+    #def Correct(self, k):
+        # // L1 = {w | #0s (w) < #1s (w)}
+        # for f in F -> for any accepting state in DFA:
+        #   for(int m = 1; m == k; m++):
+        #       T1[start, f, l, m] -> l being k-m & T1 being a table
+        #       translated to =
+        #       T1[delta(start, 0), f, l-1, m-1] + T1[delta(start, 1), f, l-1, m+1]
+        # for anystate a not in the DFA:
+        #   for(int m = -1; m == -k; m--):
+        #       T2[start, a, l, m] -> l being the same as above & T2 same as T1
+        #       translated to =
+        #       T2[delta(start, 0), a, l-1, m-1] + T2[delta(start, 1), a, l-1, m+1]
+        # T = T1 + T2
         #
+        # // L2 = {w | w starts with a 1 AND has #0s (w) == #1s (w)}
+        # for f in F -> for any accepting state in DFA:
+        #   T3[delta(start, 1), f, l-1, -1]
+        # for anystate a not in the DFA:
+        #   T4[delta(start, 0), a, l-1, 1]
+        #
+        # T = T + (T3 + T4)
+        # return T -> T being the summation of the languages L1 and L2
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -137,13 +187,17 @@ class DFA():
 
 
 # Get the two DFAs with format (original DFA M and locally changed DFA N) & compare them
-#def Compare(M, M's k, L, L's K):
-#   Get the scores of the two DFAs, M & L, via Correct(DFA, # number of states)
+#def Compare(M, L, K):
+#   Get the scores of the two DFAs, M & L, via Correct(DFA, # number of states)/ 2^k
 #   With M being the original DFA and L being the DFA with local change
-#   if ( |(Correct(M, k)| / 2^k ) <= (|Correct(L, k)| / 2^k)) copy over L into M
-#   else return
+#   if ( |(Correct(M, k)| / 2^k ) <= (|Correct(L, k)| / 2^k)):
+#   | if (Score of state in M <= Score of state in L):
+#       L.CopyDFA(M) copy over M into L
+#       return L
+#   else return M
 #   OR
-#   if (file with DFA M score <= file with DFA L score) copy L into M
+#   if (file with DFA M score <= file with DFA L score):
+#       L.CopyDFA(M)
 #   else return
 
 
@@ -155,10 +209,29 @@ class DFA():
 #     result.append(stripped)
 # m1 = DFA(result)
 
-# m1 = DFA("*1,2;3,0;3,1-;0,0")
-# print(m1)
-# m1.change(transition=(0, 0, 0), accepting=[0, 1], starting=1)
-# print(m1)
+# OR
+
+# list(DFA.all_strings(["0", "1"], 5))
+# m1 = DFA(list[random int here])
+
+# m2.CopyDFA(m1)
+# m2.change(do local change at the start)
+# loop here for automated change:
+#   m3 = Compare(m1, m2, k) -> k being the length of the string
+#   if m3.DfaChecker(m1): // m3 == m1
+#       m2.CopyDFA(m3)
+#       m2.change(advance to next state and change it)
+#   else: // m3 == m2
+#       m1.CopyDFA(m3)
+#       m2.change(advance to next state and change it)
+#
+# print()
+
+m1 = DFA("*1,2;3,0;3,1-;0,0")
+print(m1)
+print(m1.formatted_string())
+m1.change(transition=(0, 0, 0), accepting=[0, 1], starting=1)
+print(m1)
 
 #-- Creates a DFA with 4 states that loop on each other
 #   has 0 as the start state, but has no accepting state
