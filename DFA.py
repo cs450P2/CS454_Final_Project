@@ -106,32 +106,58 @@ class DFA():
         # Checking pending
         if self.pending_update != L.pending_update:
             return False
-    
-    # Correct Function
-    # DFA M with input length k
-    # Description: Measure correctness of DFA M with length k
-    #def Correct(self, k):
-        # // L1 = {w | #0s (w) < #1s (w)}
-        # for f in F -> for any accepting state in DFA:
-        #   for(int m = 1; m == k; m++):
-        #       T1[start, f, l, m] -> l being k-m & T1 being a table
-        #       translated to =
-        #       T1[delta(start, 0), f, l-1, m-1] + T1[delta(start, 1), f, l-1, m+1]
-        # for anystate a not in the DFA:
-        #   for(int m = -1; m == -k; m--):
-        #       T2[start, a, l, m] -> l being the same as above & T2 same as T1
-        #       translated to =
-        #       T2[delta(start, 0), a, l-1, m-1] + T2[delta(start, 1), a, l-1, m+1]
-        # T = T1 + T2
-        #
-        # // L2 = {w | w starts with a 1 AND has #0s (w) == #1s (w)}
-        # for f in F -> for any accepting state in DFA:
-        #   T3[delta(start, 1), f, l-1, -1]
-        # for anystate a not in the DFA:
-        #   T4[delta(start, 0), a, l-1, 1]
-        #
-        # T = T + (T3 + T4)
-        # return T -> T being the summation of the languages L1 and L2
+            
+    # Correct function to help get the score of the DFA
+    def Correct(self, k)
+        T1 = int
+        T2 = int
+        T3 = int
+        T4 = int
+        # L1 = { w | #1s(w) > #0s(w) }
+        for f in self.accepting:
+            for m in k:
+                T1 += (T(self.transitions[self.starting][0], f, (k-m)-1, m-1, True) + T(self.transitions[self.starting][1], f, l-1, m+1, False)) / 2
+        for a not in self.accepting:
+            for m in k:
+                T2 += (T(self.transitions[self.starting][0], a, (k-m)-1, -(m-1), False) + T(self.transitions[self.starting][1], a, (k-m)-1, -(m+1), True)) / 2
+        # L2 = { w | #1s(w) == #0s(w) }
+        for f in self.accepting:
+            for m in k:
+                T3 += T(self.transitions[self.starting][1], f, (k-m)-1, -1, True)
+        for a not in self.accepting:
+            for m in k:
+                T4 += T(self.transitions[self.starting][0], a, (k-m)-1, 1, False)
+        # Sum of the two languages
+        return (T1+T2+T3+T4)/4
+
+
+    def T(self, p, q, l, m, first):
+        if l == 0:
+            if m > 0:
+                if q in self.accepting:
+                    return 1
+                else:
+                    return 0
+            elif m < 0:
+                if q not in self.accepting:
+                    return 1
+                else:
+                    return 0
+            else: # m == 0
+                if q in self.accepting:
+                    if first:
+                        return 1
+                    else:
+                        return 0
+                else: # q not in self.accepting
+                    if(!first):
+                        return 1
+                    else:
+                        return 0
+        return (T(self.transitions[p][1], q, l-1, m+1, first) + T(self.transitions[p][0], q, l-1, m-1, first)) / 2
+
+
+
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -187,10 +213,10 @@ class DFA():
 
 
 # Get the two DFAs with format (original DFA M and locally changed DFA N) & compare them
-#def Compare(M, L, K):
+#def CorrectState(M, L, K):
 #   Get the scores of the two DFAs, M & L, via Correct(DFA, # number of states)/ 2^k
 #   With M being the original DFA and L being the DFA with local change
-#   if ( |(Correct(M, k)| / 2^k ) <= (|Correct(L, k)| / 2^k)):
+#   if ( (M.Correct(k)) <= (L.Correct(k))):
 #   | if (Score of state in M <= Score of state in L):
 #       L.CopyDFA(M) copy over M into L
 #       return L
