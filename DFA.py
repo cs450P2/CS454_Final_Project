@@ -1,8 +1,11 @@
 import random as r
 from itertools import product
+from math import factorial
 
 FILENO = 0
 SFILENO = 0
+
+T = [[[[], []], [[], []]], [[[], []], [[], []]]]
 
 class DFAError(Exception):
         pass
@@ -14,6 +17,8 @@ class DFA():
         self.starting = 0
         self.as_str = ""
         self.pending_update = True
+        self.T =[for]
+        
         
         if data == None:
             return
@@ -76,36 +81,7 @@ class DFA():
         for c in s:
             cur_state = self.transitions[cur_state][int(c)]
         return self.accepting[cur_state]
-        
-    # Copy for DFA self to get DFA N
-    def CopyDFA(self, N)
-        self.transitions = N.transitions.copy()
-        self.accepting = N.accepting.copy()
-        self.starting = N.starting
-        self.as_str = N.as_str
-        self.pending_update = N.pending_update
-
-    # Checks two DFAs self vs L and see if they are the same return bool
-    def DfaChecker(L)
-        # Checking Transitions
-        for x in self.transitions:
-            for y in L.transitions:
-                if x != y:
-                    return False
-        # Checking accepting states
-        for x in self.accepting:
-            for y in L.accepting:
-                if x != y:
-                    return False
-        # checking starting states
-        if self.starting != L.starting:
-            return False
-        # Checking str
-        if self.as_str != L.as_str:
-            return False
-        # Checking pending
-        if self.pending_update != L.pending_update:
-            return False
+    
             
     # Correct function to help get the score of the DFA
     def Correct(self, k)
@@ -115,49 +91,31 @@ class DFA():
         T4 = int
         # L1 = { w | #1s(w) > #0s(w) }
         for f in self.accepting:
-            for m in k:
-                T1 += (T(self.transitions[self.starting][0], f, (k-m)-1, m-1, True) + T(self.transitions[self.starting][1], f, l-1, m+1, False)) / 2
+            for m in range(1,k+1):
+                p = self.transitions[self.starting][0]
+                q = f
+                l = k-1
+                T1 += T[p, q, l-1, m-1] + T[p, q, l, m+1]
         for a not in self.accepting:
-            for m in k:
-                T2 += (T(self.transitions[self.starting][0], a, (k-m)-1, -(m-1), False) + T(self.transitions[self.starting][1], a, (k-m)-1, -(m+1), True)) / 2
+            for m in range(0,-k-1):
+                p = self.transitions[self.starting][0]
+                q = a
+                l = k-1
+                T2 += T[p, q, l-1, -(m-1)] + T[p, q, l, -(m+1)]
         # L2 = { w | #1s(w) == #0s(w) }
         for f in self.accepting:
-            for m in k:
-                T3 += T(self.transitions[self.starting][1], f, (k-m)-1, -1, True)
+            p = self.transitions[self.starting][1]
+            q = f
+            l = k-1
+            T3 += T[p, q, l, -1]
         for a not in self.accepting:
-            for m in k:
-                T4 += T(self.transitions[self.starting][0], a, (k-m)-1, 1, False)
+            p = self.transitions[self.starting][0]
+            q = a
+            l = k-1
+            T4 += T[p, q, l, 1]
         # Sum of the two languages
-        return (T1+T2+T3+T4)/4
-
-
-    def T(self, p, q, l, m, first):
-        if l == 0:
-            if m > 0:
-                if q in self.accepting:
-                    return 1
-                else:
-                    return 0
-            elif m < 0:
-                if q not in self.accepting:
-                    return 1
-                else:
-                    return 0
-            else: # m == 0
-                if q in self.accepting:
-                    if first:
-                        return 1
-                    else:
-                        return 0
-                else: # q not in self.accepting
-                    if(!first):
-                        return 1
-                    else:
-                        return 0
-        return (T(self.transitions[p][1], q, l-1, m+1, first) + T(self.transitions[p][0], q, l-1, m-1, first)) / 2
-
-
-
+        return T1+T2+T3+T4
+        
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -211,6 +169,15 @@ class DFA():
         m.transitions = [[rand_state(), rand_state()] for i in range(n)]
         return m
 
+# Generate T table
+def GenT():
+    choose = lambda p,q: (factorial(p)) / ((factorial(q)) / (factorial(p-q)))
+    for a in range(0, (k/2)+1): # base case for m
+        m = k - (2 * a)
+        T[p,q,l,m] = choose(k, a)
+        T[p,q,l,-m] = choose(k, a)
+
+    
 
 # Get the two DFAs with format (original DFA M and locally changed DFA N) & compare them
 #def CorrectState(M, L, K):
