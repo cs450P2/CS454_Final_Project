@@ -19,7 +19,8 @@ class DFA():
         self.pending_update = True
         self.score = None
         self.T = [[[[], []], [[], []]], [[[], []], [[], []]]]
-        
+        self.w = None
+        self.score = None
         
         
         if data == None:
@@ -86,7 +87,7 @@ class DFA():
     
             
     # Correct function to help get the score of the DFA
-    #def Correct(self, k):
+    def Correct(self, k):
         T1 = int
         T2 = int
         T3 = int
@@ -143,16 +144,35 @@ class DFA():
                          return 0
          return (T(self.transitions[p][1], q, l-1, m+1, first) + T(self.transitions[p][0], q, l-1, m-1, first)) / 2
          
-    def GenT(self, i, k, d, w):
+    # Generates the Table for the program
+    def GenT(self, i, k, d):
         #Base
-        j = self.transitions[i][w]
+        j = self.transitions[i][self.w]
         if d == 0:
             if k == 0:
                 if j != i:
                     T[i,j,k,d] = 0
                 T[i,i,k,d] = 1
                 return T[i,j,k,d]
-        return T[i,j,k,d] = GenT(self.transitions[i][1], k-1, d-1, w) + GenT(self.transitions[i][0], k-1, d+1, w)
+        return T[i,j,k,d] = GenT(self.transitions[i][1], k-1, d-1) + GenT(self.transitions[i][0], k-1, d+1)
+
+    # Matrix multiplication for calculating W, W = sTnf'
+    def Mmult(self):
+        resultA = []
+        resultB = []
+        # sT mult
+        for i in range(len(self.starting)):
+            for j in range(len(self.transitions[0])):
+                for k in range(len(self.transitions)):
+                    resultA[i][j] += self.starting[i][k] * self.transitions[k][j]
+        for i in range(len(resultA)):
+            for j in range(len(self.accepting[0])):
+                for k in range(len(self.accepting)):
+                    resultB[i][j] += resultA[i][k] * self.accepting[k][j]
+
+        self.w = resultB[0][0]
+
+
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -281,3 +301,16 @@ print(m1)
 # print(m5)
 
 # print(list(DFA.all_strings(["0", "1"], 5)))
+
+# m6 = DFA("*1,2;3,0;3,1-;0,0")
+# m6.Mmult()
+# get string to test here
+# k = TestString.len
+# m = 0
+# for i in range(k):
+#   if TestString[i] == 1:
+#       m += 1
+#   else:
+#       m -= 1
+# m6.GenT(m6.starting, k, m)
+# self.score = m6.Correct(TestString.len) / (2**k) # does Correct(DFA, k) / (2^k)
