@@ -17,7 +17,9 @@ class DFA():
         self.starting = 0
         self.as_str = ""
         self.pending_update = True
-        self.T =[for]
+        self.score = None
+        self.T = [[[[], []], [[], []]], [[[], []], [[], []]]]
+        
         
         
         if data == None:
@@ -84,7 +86,7 @@ class DFA():
     
             
     # Correct function to help get the score of the DFA
-    def Correct(self, k)
+    #def Correct(self, k):
         T1 = int
         T2 = int
         T3 = int
@@ -97,7 +99,7 @@ class DFA():
                 l = k-1
                 T1 += T[p, q, l-1, m-1] + T[p, q, l, m+1]
         for a not in self.accepting:
-            for m in range(0,-k-1):
+            for m in range(-1,-k-1):
                 p = self.transitions[self.starting][0]
                 q = a
                 l = k-1
@@ -116,6 +118,41 @@ class DFA():
         # Sum of the two languages
         return T1+T2+T3+T4
         
+    def T(self, p, q, l, m, first):
+         if l == 0:
+             if m > 0:
+                 if q in self.accepting:
+                     return 1
+                 else:
+                     return 0
+             elif m < 0:
+                 if q not in self.accepting:
+                     return 1
+                 else:
+                     return 0
+             else: # m == 0
+                 if q in self.accepting:
+                     if first:
+                         return 1
+                     else:
+                         return 0
+                 else: # q not in self.accepting
+                     if(!first):
+                         return 1
+                     else:
+                         return 0
+         return (T(self.transitions[p][1], q, l-1, m+1, first) + T(self.transitions[p][0], q, l-1, m-1, first)) / 2
+         
+    def GenT(self, i, k, d, w):
+        #Base
+        j = self.transitions[i][w]
+        if d == 0:
+            if k == 0:
+                if j != i:
+                    T[i,j,k,d] = 0
+                T[i,i,k,d] = 1
+                return T[i,j,k,d]
+        return T[i,j,k,d] = GenT(self.transitions[i][1], k-1, d-1, w) + GenT(self.transitions[i][0], k-1, d+1, w)
 
     def set_state(self, str_val):
         if self.error_check(str_val):
@@ -169,15 +206,7 @@ class DFA():
         m.transitions = [[rand_state(), rand_state()] for i in range(n)]
         return m
 
-# Generate T table
-def GenT():
-    choose = lambda p,q: (factorial(p)) / ((factorial(q)) / (factorial(p-q)))
-    for a in range(0, (k/2)+1): # base case for m
-        m = k - (2 * a)
-        T[p,q,l,m] = choose(k, a)
-        T[p,q,l,-m] = choose(k, a)
 
-    
 
 # Get the two DFAs with format (original DFA M and locally changed DFA N) & compare them
 #def CorrectState(M, L, K):
