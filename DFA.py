@@ -138,6 +138,10 @@ class DFA():
         m.alternativeRep()
         return m
 
+
+
+
+
 #language used:
     # L = { w | w is binary string, w has more 1's than 0's OR w has equal
     # number of 1's and 0's and begins with 1}
